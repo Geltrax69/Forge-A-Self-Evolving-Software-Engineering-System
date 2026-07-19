@@ -1,0 +1,196 @@
+{
+  "nodes": {
+    "fw:go": {
+      "id": "fw:go",
+      "type": "Framework",
+      "name": "Go",
+      "attrs": {}
+    },
+    "fw:chi": {
+      "id": "fw:chi",
+      "type": "Framework",
+      "name": "Chi",
+      "attrs": {}
+    },
+    "fw:sqlc": {
+      "id": "fw:sqlc",
+      "type": "Framework",
+      "name": "SQLC",
+      "attrs": {}
+    },
+    "fw:postgres": {
+      "id": "fw:postgres",
+      "type": "Framework",
+      "name": "Postgres",
+      "attrs": {}
+    },
+    "fw:jwt": {
+      "id": "fw:jwt",
+      "type": "Framework",
+      "name": "JWT",
+      "attrs": {}
+    },
+    "doc:go": {
+      "id": "doc:go",
+      "type": "Documentation",
+      "name": "Go docs",
+      "attrs": {
+        "path": "backend/Go"
+      }
+    },
+    "doc:chi": {
+      "id": "doc:chi",
+      "type": "Documentation",
+      "name": "Chi docs",
+      "attrs": {
+        "path": "backend/Chi"
+      }
+    },
+    "doc:jwt": {
+      "id": "doc:jwt",
+      "type": "Documentation",
+      "name": "JWT docs",
+      "attrs": {
+        "path": "auth/JWT"
+      }
+    },
+    "doc:sqlc": {
+      "id": "doc:sqlc",
+      "type": "Documentation",
+      "name": "SQLC docs",
+      "attrs": {
+        "path": "backend/SQLC"
+      }
+    },
+    "doc:pg": {
+      "id": "doc:pg",
+      "type": "Documentation",
+      "name": "Postgres docs",
+      "attrs": {
+        "path": "database/PostgreSQL"
+      }
+    },
+    "feature:login": {
+      "id": "feature:login",
+      "type": "Feature",
+      "name": "Login",
+      "attrs": {
+        "status": "planned"
+      }
+    },
+    "task:jwt": {
+      "id": "task:jwt",
+      "type": "Task",
+      "name": "Generate JWT",
+      "attrs": {
+        "status": "todo"
+      }
+    },
+    "file:auth": {
+      "id": "file:auth",
+      "type": "File",
+      "name": "auth.go",
+      "attrs": {
+        "path": "workspace/auth.go"
+      }
+    },
+    "test:login": {
+      "id": "test:login",
+      "type": "Test",
+      "name": "Login API Test",
+      "attrs": {
+        "path": "workspace/auth_test.go",
+        "status": "untested"
+      }
+    },
+    "ex:login": {
+      "id": "ex:login",
+      "type": "Example",
+      "name": "go/login",
+      "attrs": {
+        "path": "go/login"
+      }
+    },
+    "bug:bearer": {
+      "id": "bug:bearer",
+      "type": "Bug",
+      "name": "Bearer prefix missing",
+      "attrs": {
+        "message": "JWT validation failed: token had no 'Bearer ' prefix trimmed",
+        "status": "open"
+      }
+    }
+  },
+  "edges": [
+    [
+      "feature:login",
+      "REQUIRES",
+      "fw:jwt"
+    ],
+    [
+      "feature:login",
+      "REQUIRES",
+      "fw:chi"
+    ],
+    [
+      "feature:login",
+      "REQUIRES",
+      "fw:go"
+    ],
+    [
+      "feature:login",
+      "REQUIRES",
+      "fw:sqlc"
+    ],
+    [
+      "fw:jwt",
+      "DOCUMENTED_BY",
+      "doc:jwt"
+    ],
+    [
+      "fw:chi",
+      "DOCUMENTED_BY",
+      "doc:chi"
+    ],
+    [
+      "fw:go",
+      "DOCUMENTED_BY",
+      "doc:go"
+    ],
+    [
+      "fw:sqlc",
+      "DOCUMENTED_BY",
+      "doc:sqlc"
+    ],
+    [
+      "fw:jwt",
+      "HAS_EXAMPLE",
+      "ex:login"
+    ],
+    [
+      "feature:login",
+      "IMPLEMENTED_BY",
+      "file:auth"
+    ],
+    [
+      "feature:login",
+      "VERIFIED_BY",
+      "test:login"
+    ],
+    [
+      "file:auth",
+      "DEPENDS_ON",
+      "fw:jwt"
+    ],
+    [
+      "file:auth",
+      "USES",
+      "fw:chi"
+    ],
+    [
+      "bug:bearer",
+      "CAUSED_BY",
+      "file:auth"
+    ]
+  ]
+}

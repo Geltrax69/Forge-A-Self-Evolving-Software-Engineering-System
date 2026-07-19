@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+Icon
+Icon?
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# forge runtime artifacts
+workspace/*
+!workspace/.gitkeep
+logs/*
+!logs/.gitkeep
+
+# local model / secrets
+.env

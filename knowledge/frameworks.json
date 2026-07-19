@@ -1,0 +1,6 @@
+{
+  "frontend": "NextJS",
+  "backend": "Go",
+  "database": "Postgres",
+  "orm": "SQLC"
+}

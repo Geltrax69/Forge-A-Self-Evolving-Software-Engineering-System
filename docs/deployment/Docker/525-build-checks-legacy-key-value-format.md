@@ -1,0 +1,67 @@
+url: https://docs.docker.com/reference/build-checks/legacy-key-value-format/
+----
+
+# LegacyKeyValueFormat
+
+***
+
+Table of contents
+
+***
+
+## [Output](#output)
+
+```text
+"ENV key=value" should be used instead of legacy "ENV key value" format
+```
+
+## [Description](#description)
+
+The correct format for declaring environment variables and build arguments in a Dockerfile is `ENV key=value` and `ARG key=value`, where the variable name (`key`) and value (`value`) are separated by an equals sign (`=`). Historically, Dockerfiles have also supported a space separator between the key and the value (for example, `ARG key value`). This legacy format is deprecated, and you should only use the format with the equals sign.
+
+## [Examples](#examples)
+
+❌ Bad: using a space separator for variable key and value.
+
+```dockerfile
+FROM alpine
+ARG foo bar
+```
+
+✅ Good: use an equals sign to separate key and value.
+
+```dockerfile
+FROM alpine
+ARG foo=bar
+```
+
+❌ Bad: multi-line variable declaration with a space separator.
+
+```dockerfile
+ENV DEPS \
+    curl \
+    git \
+    make
+```
+
+✅ Good: use an equals sign and wrap the value in quotes.
+
+```dockerfile
+ENV DEPS="\
+    curl \
+    git \
+    make"
+```
+
+> Note
+>
+> Be aware of leading whitespace when converting multi-line legacy syntax to the modern `key=value` format. In the legacy format, leading whitespace on continuation lines is included in the value. In the modern format with quoted values, leading whitespace inside the quotes is also preserved. If you don't want leading whitespace in the value, make sure to remove it when rewriting to the new format:
+>
+> ```dockerfile
+> ENV DEPS="\
+> curl \
+> git \
+> make"
+> ```
+
+----

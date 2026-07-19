@@ -1,0 +1,22 @@
+url: https://docs.docker.com/reference/cli/docker/model/status/
+----
+
+# docker model status
+
+***
+
+| Description | Check if the Docker Model Runner is running |
+| ----------- | ------------------------------------------- |
+| Usage       | `docker model status`                       |
+
+## [Description](#description)
+
+Check whether the Docker Model Runner is running and displays the current inference engine.
+
+## [Options](#options)
+
+| Option   | Default | Description           |
+| -------- | ------- | --------------------- |
+| `--json` |         | Format output in JSON |
+
+----

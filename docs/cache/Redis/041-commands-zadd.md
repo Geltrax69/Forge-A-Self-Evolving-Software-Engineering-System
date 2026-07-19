@@ -1,0 +1,144 @@
+url: https://redis.io/docs/latest/commands/zadd/
+----
+
+# ZADD
+
+Adds one or more members to a sorted set, or updates their scores. Creates
+
+Adds all the specified members with the specified scores to the sorted set
+stored at `key`.
+It is possible to specify multiple score / member pairs.
+If a specified member is already a member of the sorted set, the score is
+updated and the element reinserted at the right position to ensure the correct
+ordering.
+
+If `key` does not exist, a new sorted set with the specified members as sole
+members is created, like if the sorted set was empty. If the key exists but does not hold a sorted set, an error is returned.
+
+The score values should be the string representation of a double precision floating point number. `+inf` and `-inf` values are valid values as well.
+
+## Required arguments
+
+<details open><summary><code>key</code></summary>
+
+The name of the key that holds the sorted set.
+
+</details>
+
+<details open><summary><code>score member [score member ...]</code></summary>
+
+One or more score-member pairs to add or update. `score` is a double-precision floating-point number.
+
+</details>
+
+## Optional arguments
+
+`NX` and `XX` are mutually exclusive, as are `GT` and `LT`.
+
+<details open><summary><code>NX</code></summary>
+
+Only add new members; do not update existing members.
+
+</details>
+
+<details open><summary><code>XX</code></summary>
+
+Only update existing members; do not add new members.
+
+</details>
+
+<details open><summary><code>GT</code></summary>
+
+Only update an existing member if the new score is greater than the current score. Does not prevent adding new members.
+
+</details>
+
+<details open><summary><code>LT</code></summary>
+
+Only update an existing member if the new score is less than the current score. Does not prevent adding new members.
+
+</details>
+
+<details open><summary><code>CH</code></summary>
+
+Change the return value from the number of added members to the number of changed members (added plus updated).
+
+</details>
+
+<details open><summary><code>INCR</code></summary>
+
+Increment the member's score by `score` instead of setting it, behaving like `ZINCRBY`. Only one score-member pair may be given.
+
+</details>
+
+## Examples
+
+> ZADD myzset 1 "one"
+(integer) 1
+> ZADD myzset 1 "uno"
+(integer) 1
+> ZADD myzset 2 "two" 3 "three"
+(integer) 2
+> ZRANGE myzset 0 -1 WITHSCORES
+1) "one"
+2) "1"
+3) "uno"
+4) "1"
+5) "two"
+6) "2"
+7) "three"
+8) "3"
+
+## Details
+
+### Range of integer scores that can be expressed precisely
+
+Redis sorted sets use a double 64-bit floating-point number to represent the score. This format precisely represents integers between `-(2^53)` and `+(2^53)`, inclusive. In practical terms, you can store integers from -9007199254740992 to 9007199254740992 without losing precision. Redis represents larger integers and fractions in exponential form internally, so you may get only an approximation of the score you set.
+
+### Sorted sets 101
+
+Sorted sets are sorted by their score in an ascending way.
+The same element only exists a single time, no repeated elements are
+permitted. The score can be modified both by `ZADD` that will update the
+element score, and as a side effect, its position on the sorted set, and
+by [`ZINCRBY`]() that can be used in order to update the score relatively to its
+previous value.
+
+The current score of an element can be retrieved using the [`ZSCORE`]() command,
+that can also be used to verify if an element already exists or not.
+
+For an introduction to sorted sets, see the data types page on [sorted
+sets][tdtss].
+
+[tdtss]: /develop/data-types#sorted-sets
+
+### Elements with the same score
+
+While the same element can't be repeated in a sorted set since every element
+is unique, it is possible to add multiple different elements *having the same score*. When multiple elements have the same score, they are *ordered lexicographically* (they are still ordered by score as a first key, however, locally, all the elements with the same score are relatively ordered lexicographically).
+
+The lexicographic ordering used is binary, it compares strings as array of bytes.
+
+If the user inserts all the elements in a sorted set with the same score (for example 0), all the elements of the sorted set are sorted lexicographically, and range queries on elements are possible using the command [`ZRANGEBYLEX`]() (Note: it is also possible to query sorted sets by range of scores using [`ZRANGEBYSCORE`]()).
+
+
+## Return information
+
+
+Any of the following:
+* [Nil reply](../../develop/reference/protocol-spec#bulk-strings): if the operation was aborted because of a conflict with one of the _XX/NX/LT/GT_ options.
+* [Integer reply](../../develop/reference/protocol-spec#integers): the number of new members when the _CH_ option is not used.
+* [Integer reply](../../develop/reference/protocol-spec#integers): the number of new or updated members when the _CH_ option is used.
+* [Bulk string reply](../../develop/reference/protocol-spec#bulk-strings): the updated score of the member when the _INCR_ option is used.
+
+-tab-sep-
+
+Any of the following:
+* [Null reply](../../develop/reference/protocol-spec#nulls): if the operation was aborted because of a conflict with one of the _XX/NX/LT/GT_ options.
+* [Integer reply](../../develop/reference/protocol-spec#integers): the number of new members when the _CH_ option is not used.
+* [Integer reply](../../develop/reference/protocol-spec#integers): the number of new or updated members when the _CH_ option is used.
+* [Double reply](../../develop/reference/protocol-spec#doubles): the updated score of the member when the _INCR_ option is used.
+
+
+
+----

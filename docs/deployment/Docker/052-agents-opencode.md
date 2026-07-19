@@ -1,0 +1,84 @@
+url: https://docs.docker.com/ai/sandboxes/agents/opencode/
+----
+
+# OpenCode
+
+***
+
+Table of contents
+
+***
+
+This guide covers authentication, configuration, and usage of OpenCode in a sandboxed environment.
+
+Official documentation: [OpenCode](https://opencode.ai/docs)
+
+## [Quick start](#quick-start)
+
+Create a sandbox and run OpenCode for a project directory:
+
+```console
+$ sbx run opencode ~/my-project
+```
+
+The workspace parameter is optional and defaults to the current directory:
+
+```console
+$ cd ~/my-project
+$ sbx run opencode
+```
+
+OpenCode launches a TUI (text user interface) where you can select your preferred LLM provider and interact with the agent.
+
+## [Authentication](#authentication)
+
+OpenCode supports multiple providers. Store keys for the providers you want to use with [stored secrets](https://docs.docker.com/ai/sandboxes/security/credentials/#stored-secrets):
+
+```console
+$ sbx secret set -g openai
+$ sbx secret set -g anthropic
+$ sbx secret set -g google
+$ sbx secret set -g xai
+$ sbx secret set -g groq
+$ sbx secret set -g aws
+$ sbx secret set -g openrouter
+```
+
+You only need to configure the providers you want to use. OpenCode detects available credentials and offers those providers in the TUI.
+
+You can also use environment variables (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, `XAI_API_KEY`, `GROQ_API_KEY`, `AWS_ACCESS_KEY_ID`, `OPENROUTER_API_KEY`). See [Credentials](https://docs.docker.com/ai/sandboxes/security/credentials/) for details on both methods.
+
+## [Configuration](#configuration)
+
+Sandboxes don't pick up user-level configuration from your host. Only project-level configuration in the working directory is available inside the sandbox. See [Why doesn't the sandbox use my user-level agent configuration?](https://docs.docker.com/ai/sandboxes/faq/#why-doesnt-the-sandbox-use-my-user-level-agent-configuration) for workarounds.
+
+OpenCode uses a TUI interface and doesn't require extensive configuration files. The agent prompts you to select a provider when it starts, and you can switch providers during a session.
+
+### [Default startup command](#default-startup-command)
+
+The sandbox runs `opencode` with no implicit flags. Args after `--` are passed straight through. For example, to resume an existing session:
+
+```console
+$ sbx run opencode -- -s <session-id>
+```
+
+### [TUI mode](#tui-mode)
+
+OpenCode launches in TUI mode by default. The interface shows:
+
+* Available LLM providers (based on configured credentials)
+* Current conversation history
+* File operations and tool usage
+* Real-time agent responses
+
+Use keyboard shortcuts to navigate the interface and interact with the agent.
+
+## [Base image](#base-image)
+
+Template: `docker/sandbox-templates:opencode`
+
+OpenCode supports multiple LLM providers with automatic credential injection through the sandbox proxy.
+
+See [Customize](https://docs.docker.com/ai/sandboxes/customize/) to pre-install tools or customize this environment.
+
+----
