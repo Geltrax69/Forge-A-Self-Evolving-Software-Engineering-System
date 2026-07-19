@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from experiments.harness import Recorder, go_build, extract_code
 from knowledge.packages import render
 
-MODEL = os.environ.get("FORGE_LLM_MODEL", "dolphin-x1-8b")
+MODEL = os.environ.get("FORGE_LLM_MODEL", "minicpm5-1b")
 EVIDENCE = render("jwt-go", "chi-go")
 
 STRICT = ("You MUST ONLY use imports, functions, types and packages explicitly "
@@ -23,9 +23,10 @@ def run():
     rec = Recorder(model=MODEL)
 
     # Phase 3 — cheap probe before spending tokens on generation
+    # (1B is a reasoning model — give it room or it never emits a final answer)
     p = rec.call("PROBE: which JWT package?",
                  STRICT + "\nAnswer with the import path ONLY.",
-                 "What Go JWT package should be used?", max_tokens=30)
+                 "What Go JWT package should be used?", max_tokens=500)
     if "golang-jwt/jwt/v5" not in p["answer"]:
         print("\n✗ PROBE FAILED — context insufficient, stopping before generation.")
         rec.summary(); return
@@ -35,7 +36,7 @@ def run():
     g = rec.call("GENERATE: login handler",
                  STRICT + "\nGenerate a complete, COMPILABLE Go file for a login handler. "
                  "Output one ```go block only.",
-                 "Generate a login handler for the Login feature.", max_tokens=900)
+                 "Generate a login handler for the Login feature.", max_tokens=2500)
     code = extract_code(g["answer"])
 
     # Phase 4/5/6 — deterministic verify + auto-repair loop (patch, don't regenerate)
@@ -52,7 +53,7 @@ def run():
                      "errors. Return the FULL corrected file as one ```go block. Fix ONLY what "
                      "the errors demand (usually missing imports). Change nothing else.",
                      f"CODE:\n```go\n{code}\n```\n\nBUILD ERRORS:\n{errors}",
-                     max_tokens=900, show_input=False)
+                     max_tokens=2500, show_input=False)
         code = extract_code(r["answer"])
     else:
         print("\n✗ Still failing after 3 patches — would return nothing (Phase 7 confidence gate).")

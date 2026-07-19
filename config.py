@@ -13,13 +13,12 @@ LLM_MODEL = os.environ.get("FORGE_LLM_MODEL", "minicpm5-1b")
 LLM_API_KEY = os.environ.get("FORGE_LLM_KEY", "not-needed")  # local servers ignore it
 EMBED_MODEL = os.environ.get("FORGE_EMBED_MODEL", "text-embedding-nomic-embed-text-v1.5")
 
-# Per-brain model routing. Small model for cheap/mechanical stages, bigger for
-# reasoning-heavy planning. Any stage falls back to LLM_MODEL if unset.
-# The 1B loops on planning; the 8B produces clean plans (verified).
+# 1B only. Every stage runs on minicpm5-1b — the whole point is that the
+# evidence + verify + auto-repair pipeline makes a tiny model reliable, not a big one.
 STAGE_MODELS = {
-    "intent":  os.environ.get("FORGE_INTENT_MODEL", LLM_MODEL),      # mechanical -> tiny is fine
-    "planner": os.environ.get("FORGE_PLANNER_MODEL", "dolphin-x1-8b"),  # needs the big brain
-    "coder":   os.environ.get("FORGE_CODER_MODEL", "dolphin-x1-8b"),
+    "intent":  os.environ.get("FORGE_INTENT_MODEL", LLM_MODEL),
+    "planner": os.environ.get("FORGE_PLANNER_MODEL", LLM_MODEL),
+    "coder":   os.environ.get("FORGE_CODER_MODEL", LLM_MODEL),
 }
 
 # Knowledge router: keyword -> doc folders to load. First real routing "brain".
