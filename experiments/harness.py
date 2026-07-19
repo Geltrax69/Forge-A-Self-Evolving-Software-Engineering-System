@@ -39,9 +39,12 @@ class Recorder:
         answer = content or thought
         finish = data["choices"][0]["finish_reason"]
 
+        reasoning_tok = u.get("completion_tokens_details", {}).get("reasoning_tokens", 0)
+        answer_tok = u["completion_tokens"] - reasoning_tok
         rec = {"label": label, "model": self.model, "answer": answer,
                "used_reasoning": not content and bool(thought),
                "prompt_tokens": u["prompt_tokens"], "output_tokens": u["completion_tokens"],
+               "reasoning_tokens": reasoning_tok, "answer_tokens": answer_tok,
                "total_tokens": u["total_tokens"], "finish": finish,
                "seconds": round(dt, 1), "tok_per_s": round(u["completion_tokens"] / dt, 1)}
         self.log.append(rec)
