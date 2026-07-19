@@ -20,11 +20,12 @@ class Recorder:
         self.temperature = temperature
         self.log = []
 
-    def call(self, label, system, user, max_tokens=600, show_input=True):
+    def call(self, label, system, user, max_tokens=600, show_input=True, temperature=None):
         messages = [{"role": "system", "content": system},
                     {"role": "user", "content": user}]
         body = json.dumps({"model": self.model, "messages": messages,
-                           "temperature": self.temperature, "max_tokens": max_tokens}).encode()
+                           "temperature": self.temperature if temperature is None else temperature,
+                           "max_tokens": max_tokens}).encode()
         req = urllib.request.Request(config.LLM_BASE_URL + "/chat/completions",
                                      data=body, headers={"Content-Type": "application/json"})
         t = time.time()
