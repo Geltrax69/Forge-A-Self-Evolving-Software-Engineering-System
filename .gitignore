@@ -17,3 +17,6 @@ logs/*
 
 # local model / secrets
 .env
+
+# session tooling
+.remember/
