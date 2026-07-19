@@ -17,10 +17,14 @@ PACKAGES = {
         "confidence": 100,
         "source": "github.com/golang-jwt/jwt v5 (official, maintained)",
         "imports": ["github.com/golang-jwt/jwt/v5"],
+        "requires": ["time"],  # stdlib the model forgets — jwt.NewNumericDate needs time
+        "avoid": ["github.com/golang-jwt/jwt/v3", "jwt.StandardClaims (deprecated, use RegisteredClaims)"],
+        "types": ["jwt.RegisteredClaims", "jwt.SigningMethodHS256"],
         "functions": [
             "jwt.NewWithClaims(method, claims) *jwt.Token",
             "token.SignedString(key []byte) (string, error)",
             "jwt.ParseWithClaims(tokenStr, claims, keyFunc) (*jwt.Token, error)",
+            "jwt.NewNumericDate(time.Time) *jwt.NumericDate",
             "jwt.RegisteredClaims{}  // standard claims (exp, sub, iat)",
         ],
         "example": (
@@ -43,6 +47,9 @@ PACKAGES = {
         "confidence": 100,
         "source": "github.com/go-chi/chi v5 (official)",
         "imports": ["github.com/go-chi/chi/v5", "github.com/go-chi/chi/v5/middleware"],
+        "requires": ["net/http"],  # handlers are http.HandlerFunc
+        "avoid": ["github.com/go-chi/jwts (does not exist)"],
+        "types": ["*chi.Mux", "http.HandlerFunc"],
         "functions": [
             "chi.NewRouter() *chi.Mux",
             "r.Use(middleware.Logger)",
@@ -70,10 +77,16 @@ def render(*keys):
             continue
         out.append(f"### EVIDENCE: {p['concept']} ({p['language']})  [source: {p['source']}]")
         out.append("OFFICIAL IMPORT(S):\n  " + "\n  ".join(p["imports"]))
+        if p.get("requires"):
+            out.append("ALSO REQUIRES THESE IMPORTS:\n  " + "\n  ".join(p["requires"]))
+        if p.get("types"):
+            out.append("TYPES:\n  " + "\n  ".join(p["types"]))
         out.append("OFFICIAL FUNCTIONS:\n  " + "\n  ".join(p["functions"]))
         out.append("VERIFIED EXAMPLE:\n" + p["example"])
-        if p["mistakes"]:
+        if p.get("mistakes"):
             out.append("KNOWN MISTAKES:\n  - " + "\n  - ".join(p["mistakes"]))
+        if p.get("avoid"):
+            out.append("NEVER USE (deprecated/nonexistent):\n  - " + "\n  - ".join(p["avoid"]))
         out.append("")
     return "\n".join(out)
 
